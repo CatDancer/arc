@@ -97,26 +97,12 @@
         (if srv-noisy* (pr "\n\n"))
         (respond o op (parseargs (string (rev line))) cooks ip))))
 
-(= header* "HTTP/1.0 200 OK
-Content-Type: text/html; charset=utf-8
-Connection: close")
+(def ok-response (content-type)
+  (string "HTTP/1.0 200 OK
+Content-Type: " content-type "
+Connection: close"))
 
-(= srv-header* (table))
-
-(= (srv-header* 'gif) 
-"HTTP/1.0 200 OK
-Content-Type: image/gif
-Connection: close")
-
-(= (srv-header* 'jpg) 
-"HTTP/1.0 200 OK
-Content-Type: image/jpeg
-Connection: close")
-
-(= (srv-header* 'text/html) 
-"HTTP/1.0 200 OK
-Content-Type: text/html; charset=utf-8
-Connection: close")
+(= header* (ok-response "text/html; charset=utf-8"))
 
 (= rdheader* "HTTP/1.0 302 Moved")
 
@@ -174,7 +160,7 @@ Connection: close")
                 (do (prn header*)
                     (it str req))))
          (static-filetype op)
-          (do (prn (srv-header* it))
+          (do (prn (ok-response it))
               (prn)
               (w/infile i (string op)
                 (whilet b (readb i)
@@ -191,11 +177,11 @@ Connection: close")
   (let fname (string sym)
     (and (~find #\/ fname)
          (case (last (check (tokens fname #\.) ~single))
-           "gif"  'gif
-           "jpg"  'jpg
-           "css"  'text/html
-           "txt"  'text/html
-           "html" 'text/html
+           "gif"  'image/gif
+           "jpg"  'image/jpg
+           "css"  'text/css
+           "txt"  'text/plain
+           "html" '|text/html; charset=utf-8|
            ))))
 
 (def respond-err (str msg . args)
