@@ -72,7 +72,7 @@
         ((eq? (xcar (xcar s)) 'compose) (ac (decompose (cdar s) (cdr s)) env))
         ((pair? s) (ac-call (car s) (cdr s) env))
         ((eof-object? s) (exit))
-        (#t (err "Bad object in expression" s))))
+        (#t s)))
 
 (define (literal? x)
   (or (boolean? x)
