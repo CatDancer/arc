@@ -208,7 +208,7 @@
      start)))
 
 (def testify (x)
-  (if (isa x 'fn) x [is _ x]))
+  (if (in (type x) 'fn 'table) x [iso _ x]))
 
 (def some (test seq)
   (let f (testify test)
