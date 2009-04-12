@@ -1212,10 +1212,6 @@
   (unless (dir-exists path)
     (system (string "mkdir -p " path))))
 
-(def date ((o time (seconds)))
-  (let val (tostring (system (string "date -u -r " time " \"+%Y-%m-%d\"")))
-    (cut val 0 (- (len val) 1))))
-
 (def count (test x)
   (with (n 0 testf (testify test))
     (each elt x
