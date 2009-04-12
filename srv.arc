@@ -163,6 +163,9 @@ Connection: close")
 
 (= unknown-msg* "Unknown operator.")
 
+(def static-path (op)
+  (string "static/" op))
+
 (def respond (str op args cooks ip)
   (w/stdout str
     (aif (srvops* op)
@@ -176,7 +179,7 @@ Connection: close")
          (static-filetype op)
           (do (prn (srv-header* it))
               (prn)
-              (w/infile i (string op)
+              (w/infile i (static-path op)
                 (whilet b (readb i)
                   (writeb b str))))
           (respond-err str unknown-msg*))))
