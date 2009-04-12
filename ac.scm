@@ -772,6 +772,18 @@
                                 (current-output-port)))
                 b))
 
+(define (print-table f port x)
+  (display "{" port)
+  (let ((first #t))
+    (hash-table-for-each x
+      (lambda (k v)
+        (if (not first) (display " " port))
+        (print* f port k)
+        (display " " port)
+        (print* f port v)
+        (set! first #f))))
+  (display "}" port))
+
 (define (print* f port x)
 
   (define (print x)
@@ -779,6 +791,8 @@
            (display "(" port)
            (print (car x))
            (print-cdr (cdr x)))
+          ((hash-table? x)
+           (print-table f port x))
           (#t
            (f x port))))
 
