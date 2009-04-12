@@ -757,6 +757,12 @@
       (w/stdout ,gv ,@body)
       (inside ,gv))))
 
+(mac toerr body
+  `(w/stdout (stderr) ,@body))
+
+(def eprn args
+  (toerr:apply prn args))
+
 (mac fromstring (str . body)
   (w/uniq gv
    `(w/instring ,gv ,str
@@ -1123,7 +1129,7 @@
     `(let ,t1 (msec)
        (do1 ,expr
             (let ,t2 (msec)
-              (prn "time: " (- ,t2 ,t1) " msec."))))))
+              (eprn "time: " (- ,t2 ,t1) " msec."))))))
 
 (mac jtime (expr)
   `(do1 'ok (time ,expr)))
@@ -1354,7 +1360,7 @@
   `(let ,var (table) ,@body ,var))
 
 (def ero args
-  (w/stdout (stderr) 
+  (toerr
     (each a args 
       (write a)
       (writec #\space))
