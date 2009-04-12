@@ -145,7 +145,8 @@ Connection: close"))
 (deftem request
   args  nil
   cooks nil
-  ip    nil)
+  ip    nil
+  op    nil)
 
 (= unknown-msg* "Unknown operator.")
 
@@ -154,20 +155,24 @@ Connection: close"))
 
 (def respond (str op args cooks ip)
   (w/stdout str
+    (let req (inst 'request 'args args 'cooks cooks 'ip ip 'op op 'str str)
+      (dispatch req))))
+
+(def dispatch (req)
+  (with (op req!op str req!str)
     (aif (srvops* op)
-          (let req (inst 'request 'args args 'cooks cooks 'ip ip)
-            (if (redirector* op)
-                (do (prn rdheader*)
-                    (prn "Location: " (it str req))
-                    (prn))
-                (do (prn header*)
-                    (it str req))))
+          (if (redirector* op)
+              (do (prn rdheader*)
+                  (prn "Location: " (it str req))
+                  (prn))
+              (do (prn header*)
+                  (it str req)))
          (static-filetype op)
           (do (prn (ok-response it))
               (prn)
               (w/infile i (static-path op)
                 (whilet b (readb i)
-                  (writeb b str))))
+                  (writeb b))))
           (respond-err str unknown-msg*))))
 
 (def gifname (sym)
