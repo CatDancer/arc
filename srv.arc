@@ -179,6 +179,7 @@ Connection: close"))
          (case (last (check (tokens fname #\.) ~single))
            "gif"  'image/gif
            "jpg"  'image/jpg
+           "js"   'text/javascript
            "css"  'text/css
            "txt"  'text/plain
            "html" '|text/html; charset=utf-8|
