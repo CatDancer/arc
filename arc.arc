@@ -760,6 +760,9 @@
 (mac toerr body
   `(w/stdout (stderr) ,@body))
 
+(def eprn args
+  (toerr:apply prn args))
+
 (mac fromstring (str . body)
   (w/uniq gv
    `(w/instring ,gv ,str
