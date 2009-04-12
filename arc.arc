@@ -1350,8 +1350,26 @@
 
 (def load (file)
   (w/infile f file
-    (whilet e (read f)
-      (eval e))))
+    (let last #f
+      (whilet e (on-err
+                  (fn (c)
+                    (pr "Error reading " file)
+                    (if last
+                         (do (prn ": " (details c))
+                             (prn "The last item successfully read before the error was:")
+                             (write last)
+                             (prn))
+                         (do (prn " at the beginning of the file: " (details c))))
+                    (err (string "unable to load " file)))
+                  (fn () (read f)))
+        (= last e)
+        (on-err
+         (fn (c)
+           (write e)
+           (prn)
+           (err (details c)))
+         (fn ()
+           (eval e)))))))
 
 (def positive (x)
   (and (number x) (> x 0)))
