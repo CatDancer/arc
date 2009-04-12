@@ -48,6 +48,7 @@
 (require (lib "port.ss"))
 (require (lib "process.ss"))
 (require (lib "pretty.ss"))
+(require (lib "date.ss"))
 
 ; compile an Arc expression into a Scheme expression,
 ; both represented as s-expressions.
@@ -1136,6 +1137,10 @@
 
 (xdef 'quit exit)
 
+(xdef 'date
+  (lambda ()
+    (parameterize ((date-display-format 'iso-8601))
+      (date->string (seconds->date (current-seconds))))))
 
 )
 
