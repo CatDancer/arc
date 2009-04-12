@@ -69,7 +69,7 @@
         ; this line could be removed without changing semantics
         ((eq? (xcar (xcar s)) 'compose) (ac (decompose (cdar s) (cdr s)) env))
         ((pair? s) (ac-call (car s) (cdr s) env))
-        (#t (err "Bad object in expression" s))))
+        (#t s)))
 
 (define (literal? x)
   (or (boolean? x)
