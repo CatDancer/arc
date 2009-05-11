@@ -943,6 +943,14 @@
       (cons (tree-subst old new (car tree))
             (tree-subst old new (cdr tree)))))
 
+(def tree-substs (substs tree)
+  (aif (alref substs tree)
+        it
+       (atom tree)
+        tree
+        (cons (tree-substs substs (car tree))
+              (tree-substs substs (cdr tree)))))
+
 (def ontree (f tree)
   (f tree)
   (unless (atom tree)
@@ -1346,10 +1354,13 @@
        (pr ,@(parse-format str))))
 )
 
-(def load (file)
+(def load (file (o transform))
   (w/infile f file
     (whilet e (read f)
-      (eval e))))
+      (eval (if transform transform.e e)))))
+
+(def load-w/rename (file substs)
+  (load file (fn (e) (tree-substs substs e))))
 
 (def positive (x)
   (and (number x) (> x 0)))
