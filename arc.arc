@@ -394,14 +394,16 @@
 
 (def expand-metafn-call (f args)
   (if (is (car f) 'compose)
-      ((afn (fs)
-         (if (caris (car fs) 'compose)            ; nested compose
-              (self (join (cdr (car fs)) (cdr fs)))
-             (cdr fs)
-              (list (car fs) (self (cdr fs)))
-             (cons (car fs) args)))
-       (cdr f))
-      (err "Can't invert " (cons f args))))
+       ((afn (fs)
+          (if (caris (car fs) 'compose)            ; nested compose
+               (self (join (cdr (car fs)) (cdr fs)))
+              (cdr fs)
+               (list (car fs) (self (cdr fs)))
+              (cons (car fs) args)))
+        (cdr f))
+      (is (car f) 'no)
+       (err "Can't invert " (cons f args))
+       (cons f args)))
 
 (def expand= (place val)
   (if (and (isa place 'sym) (~ssyntax place))
