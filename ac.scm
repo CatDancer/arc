@@ -119,27 +119,27 @@
         (cons 'compose elts))))
 
 (define (expand-sexpr sym)
-  (build-sexpr (tokens (lambda (c) (or (eqv? c #\.) (eqv? c #\!)))
-                       (symbol->chars sym)
-                       '()
-                       '()
-                       #t)))
+  (build-sexpr (reverse (tokens (lambda (c) (or (eqv? c #\.) (eqv? c #\!)))
+                                (symbol->chars sym)
+                                '()
+                                '()
+                                #t))
+               sym))
 
 ; no error-checking!
 
-(define (build-sexpr toks)
-  (cond ((null? toks) 
-         '())
-        ((eqv? (car toks) #\.)
-         (cons (chars->value (cadr toks)) 
-               (build-sexpr (cddr toks))))
-        ((eqv? (car toks) #\!)
-         (cons (list 'quote (chars->value (cadr toks)))
-               (build-sexpr (cddr toks))))
+(define (build-sexpr toks orig)
+  (cond ((null? toks)
+         'get)
+        ((null? (cdr toks))
+         (chars->value (car toks)))
         (#t
-         (cons (chars->value (car toks))
-               (build-sexpr (cdr toks))))))
-                      
+         (list (build-sexpr (cddr toks) orig)
+               (if (eqv? (cadr toks) #\!)
+                   (list 'quote (chars->value (car toks)))
+                   (if (or (eqv? (car toks) #\.) (eqv? (car toks) #\!))
+                       (err "Bad ssyntax" orig)
+                       (chars->value (car toks))))))))
 
 (define (insym? char sym) (member char (symbol->chars sym)))
 
@@ -157,7 +157,9 @@
          (tokens test
                  (cdr source)
                  '()
-                 (let ((rec (cons (reverse token) acc)))
+                 (let ((rec (if (null? token)
+                            acc
+                            (cons (reverse token) acc))))
                    (if keepsep?
                        (cons (car source) rec)
                        rec))
