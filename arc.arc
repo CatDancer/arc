@@ -962,7 +962,7 @@
 (mac obj args
   (w/uniq g
     `(let ,g (table)
-       ,@(map (fn ((k v)) `(= (,g ',k) ,v))
+       ,@(map (fn ((k v)) `(sref ,g ,v ',k))
               (pair args))
        ,g)))
 
