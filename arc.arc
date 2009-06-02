@@ -785,6 +785,9 @@
       (w/stdout ,gv ,@body)
       (inside ,gv))))
 
+(mac toerr body
+  `(w/stdout (stderr) ,@body))
+
 (mac fromstring (str . body)
   (w/uniq gv
    `(w/instring ,gv ,str
@@ -1419,7 +1422,7 @@
   `(let ,var (table) ,@body ,var))
 
 (def ero args
-  (w/stdout (stderr) 
+  (toerr
     (each a args 
       (write a)
       (writec #\space))
