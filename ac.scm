@@ -32,6 +32,7 @@
         ((eq? (xcar (xcar s)) 'complement) 
          (ac (list 'no (cons (cadar s) (cdr s))) env))
         ((pair? s) (ac-call (car s) (cdr s) env))
+        ((eof-object? s) (exit))
         (#t (err "Bad object in expression" s))))
 
 (define (literal? x)
