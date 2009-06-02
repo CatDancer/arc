@@ -870,6 +870,33 @@
                                 (current-output-port)))
                 b))
 
+(define (print* f port x)
+
+  (define (print x)
+    (cond ((pair? x)
+           (display "(" port)
+           (print (car x))
+           (print-cdr (cdr x)))
+          (#t
+           (f x port))))
+
+  (define (print-cdr y)
+    (cond ((or (eq? y 'nil) (eq? y '()))
+           (display ")" port))
+          ((pair? y)
+           (display " " port)
+           (print (car y))
+           (print-cdr (cdr y)))
+          (#t
+           (display " . " port)
+           (print y)
+           (display ")" port))))
+
+  (print x))
+
+(define (write*   x port) (print* write   port x))
+(define (display* x port) (print* display port x))
+
 (define explicit-flush #f)
 
 (define (printwith f args)
@@ -877,12 +904,12 @@
                   (cadr args)
                   (current-output-port))))
     (when (pair? args)
-      (f (ac-denil (car args)) port))
+      (f (car args) port))
     (unless explicit-flush (flush-output port)))
   'nil)
 
-(xdef write (lambda args (printwith write   args)))
-(xdef disp  (lambda args (printwith display args)))
+(xdef write (lambda args (printwith write*   args)))
+(xdef disp  (lambda args (printwith display* args)))
 
 ; sread = scheme read. eventually replace by writing read
 
@@ -1073,7 +1100,7 @@
         (if (eqv? expr ':a)
             'done
             (let ((val (arc-eval expr)))
-              (write (ac-denil val))
+              (write* val (current-output-port))
               (namespace-set-variable-value! '_that val)
               (namespace-set-variable-value! '_thatexpr expr)
               (newline)
