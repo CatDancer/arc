@@ -201,28 +201,33 @@ Connection: close"))
 (deftem request
   args  nil
   cooks nil
-  ip    nil)
+  ip    nil
+  op    nil)
 
 (= unknown-msg* "Unknown.")
 
 (def respond (str op args cooks ip)
   (w/stdout str
+    (let req (inst 'request 'args args 'cooks cooks 'ip ip 'op op 'str str)
+      (dispatch req))))
+
+(def dispatch (req)
+  (with (op req!op str req!str)
     (aif (srvops* op)
-         (let req (inst 'request 'args args 'cooks cooks 'ip ip)
-           (if (redirector* op)
-               (do (prn rdheader*)
-                   (prn "Location: " (it str req))
-                   (prn))
-               (do (prn header*)
-                   (it str req))))
-         (let filetype (static-filetype op)
-           (aif (and filetype (file-exists (string staticdir* op)))
-                (do (prn (srv-header* filetype))
-                    (prn)
-                    (w/infile i it
-                      (whilet b (readb i)
-                        (writeb b str))))
-                (respond-err str unknown-msg*))))))
+          (if (redirector* op)
+              (do (prn rdheader*)
+                  (prn "Location: " (it str req))
+                  (prn))
+              (do (prn header*)
+                  (it str req)))
+          (let filetype (static-filetype op)
+            (aif (and filetype (file-exists (string staticdir* op)))
+                 (do (prn (srv-header* filetype))
+                     (prn)
+                     (w/infile i it
+                       (whilet b (readb i)
+                         (writeb b str))))
+                 (respond-err str unknown-msg*))))))
 
 (def static-filetype (sym)
   (let fname (coerce sym 'string)
