@@ -156,6 +156,7 @@ Connection: close"))
        (png       "image/png")
        (css       "text/css")
        (plain     "text/plain")
+       (js        "text/javascript")
        (text/html "text/html; charset=utf-8")))
 
 (= rdheader* "HTTP/1.0 302 Moved")
@@ -236,6 +237,7 @@ Connection: close"))
            "png"  'png
            "css"  'css
            "txt"  'plain
+           "js"   'js
            "htm"  'text/html
            "html" 'text/html
            "arc"  'text/html
