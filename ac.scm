@@ -22,6 +22,7 @@
         ((ssyntax? s) (ac (expand-ssyntax s) env))
         ((symbol? s) (ac-var-ref s env))
         ((ssyntax? (xcar s)) (ac (cons (expand-ssyntax (car s)) (cdr s)) env))
+        ((eq? (xcar s) 'mz) (cadr s))
         ((eq? (xcar s) 'quote) (list 'quote (ac-niltree (cadr s))))
         ((eq? (xcar s) 'quasiquote) (ac-qq (cadr s) env))
         ((eq? (xcar s) 'if) (ac-if (cdr s) env))
