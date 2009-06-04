@@ -378,7 +378,9 @@
       '()
       (cons (ac (car exprs)
                 (ac-dbname! (if (pair? names) (car names) #f) env))
-            (ac-args (ar-xcdr names) (cdr exprs) env))))
+            (ac-args (if (pair? names) (cdr names) '())
+                     (cdr exprs)
+                     env))))
 
 ; generate special fast code for ordinary two-operand
 ; calls to the following functions. this is to avoid
@@ -947,6 +949,7 @@
       ((string? x)    (case type
                         ((sym)    (string->symbol x))
                         ((cons)   (ac-niltree (string->list x)))
+                        ((num)    (apply string->number x args))
                         ((int)    (let ((n (apply string->number x args)))
                                     (if n 
                                         (iround n)
