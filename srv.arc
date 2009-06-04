@@ -201,22 +201,26 @@ Connection: close"))
 (deftem request
   args  nil
   cooks nil
-  ip    nil)
+  ip    nil
+  op    nil)
 
 (= unknown-msg* "Unknown." max-age* (table) static-max-age* nil)
 
 (def respond (str op args cooks ip)
   (w/stdout str
+    (dispatch (inst 'request 'args args 'cooks cooks 'ip ip 'op op))))
+
+(def dispatch (req)
+  (with (op req!op str req!str)
     (iflet f (srvops* op)
-           (let req (inst 'request 'args args 'cooks cooks 'ip ip)
-             (if (redirector* op)
-                 (do (prn rdheader*)
-                     (prn "Location: " (f str req))
-                     (prn))
-                 (do (prn header*)
-                     (awhen (max-age* op)
-                       (prn "Cache-Control: max-age=" it))
-                     (f str req))))
+           (if (redirector* op)
+               (do (prn rdheader*)
+                   (prn "Location: " (f str req))
+                   (prn))
+               (do (prn header*)
+                   (awhen (max-age* op)
+                     (prn "Cache-Control: max-age=" it))
+                   (f str req)))
            (let filetype (static-filetype op)
              (aif (and filetype (file-exists (string staticdir* op)))
                   (do (prn (type-header* filetype))
