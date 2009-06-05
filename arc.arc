@@ -467,7 +467,7 @@
                  (,gf (cdr ,gv))))
              ,gseq)
            (isa ,gseq 'table)
-            (maptable (fn (,gv ,var) ,@body)
+            (maptable (fn ,var ,@body)
                       ,gseq)
             (for ,gv 0 (- (len ,gseq) 1)
               (let ,var (,gseq ,gv) ,@body))))))

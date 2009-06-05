@@ -922,7 +922,8 @@
       ((string? x)    (case type
                         ((sym)    (string->symbol x))
                         ((cons)   (ac-niltree (string->list x)))
-                        ((num)    (apply string->number x args))
+                        ((num)    (or (apply string->number x args)
+                                      (err "Can't coerce" x type)))
                         ((int)    (let ((n (apply string->number x args)))
                                     (if n 
                                         (iround n)
